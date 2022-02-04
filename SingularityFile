@@ -20,4 +20,4 @@ From:  ubuntu:20.04
 
 %runscript
     # run this commands
-    python3 /MyCode/tutorial-cCC/FindSite.py /MyData/$FASTA $SITE $NCPUS
+    python3 /MyCode/tutorial-cCC/findSite.py /MyData/$FASTA $SITE $NCPUS
