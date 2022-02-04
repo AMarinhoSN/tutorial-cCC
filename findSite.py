@@ -93,20 +93,28 @@ parser.add_argument("-ncpus", type=int, default=1, help="number of cpus to use")
 args = parser.parse_args()
 # -----------------------------------------------------------------------------
 # === MAIN ====================================================================
+print("|--> INPUT")
+print(f"| fastaFile = {args.fastaFile}")
+print(f"| subString = {args.subString}")
+print(f"| ncpus = {args.ncpus}")
+
 # start pandas parallelilzation
 pandarallel.initialize(nb_workers=args.ncpus)
-
 # mount sequence dataframe
+print("@ parsing fasta file")
 seqs_dct = parseRandomFasta(args.fastaFile)
 seqs_df = pd.DataFrame(seqs_dct)
 new_col_nm = args.subString + "_pos"
+print("@ searching for strings")
 seqs_df[new_col_nm] = seqs_df["seq"].parallel_apply(findString, to_find=args.subString)
-print(seqs_df.columns)
-seqs_df[args.subString + "_count"] = seqs_df.parallel_apply(
-    countIdxs, colnm=new_col_nm, axis=1
-)
-print(seqs_df)
-print(seqs_df[[">", args.subString + "_count"]])
+new_count_col = args.subString + "_count"
+seqs_df[new_count_col] = seqs_df.parallel_apply(countIdxs, colnm=new_col_nm, axis=1)
+print("|--| summary |--|")
+print(f"| TOTAL FOUND = {seqs_df[new_count_col].sum()}")
+print(f"| AVERAGE = {seqs_df[new_count_col].mean()} / seqs")
+print("> saving results as '.csv' at current working dir...")
+seqs_df[[">", new_col_nm, new_count_col]].to_csv("./results.csv")
+print(":: DONE ::")
 # TODO add find gene function
 #  --> given a ATG index, loook for stop codons ahead of index, check if is
 #    divisible by three, store sequence
