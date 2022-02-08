@@ -1,6 +1,7 @@
 import pandas as pd
 from pandarallel import pandarallel
 import argparse
+import os
 
 # FUNCTIONS ===================================================================
 # start with ATG ends with TAA, TGA, or TAG
@@ -89,7 +90,9 @@ parser.add_argument(
     default=None,
 )
 parser.add_argument("-ncpus", type=int, default=1, help="number of cpus to use")
-
+parser.add_argument(
+    "-output_dir", default=os.getcwd(), help="output directory (default = working dir)"
+)
 args = parser.parse_args()
 # -----------------------------------------------------------------------------
 # === MAIN ====================================================================
@@ -112,8 +115,9 @@ seqs_df[new_count_col] = seqs_df.parallel_apply(countIdxs, colnm=new_col_nm, axi
 print("|--| summary |--|")
 print(f"| TOTAL FOUND = {seqs_df[new_count_col].sum()}")
 print(f"| AVERAGE = {seqs_df[new_count_col].mean()} / seqs")
-print("> saving results as '.csv' at current working dir...")
-seqs_df[[">", new_col_nm, new_count_col]].to_csv("./results.csv")
+print(f"> saving results ({args.outdir+'/results.csv'})")
+
+seqs_df[[">", new_col_nm, new_count_col]].to_csv(f"{args.outdir}/results.csv")
 print(":: DONE ::")
 # TODO add find gene function
 #  --> given a ATG index, loook for stop codons ahead of index, check if is
