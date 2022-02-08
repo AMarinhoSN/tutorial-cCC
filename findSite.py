@@ -115,9 +115,9 @@ seqs_df[new_count_col] = seqs_df.parallel_apply(countIdxs, colnm=new_col_nm, axi
 print("|--| summary |--|")
 print(f"| TOTAL FOUND = {seqs_df[new_count_col].sum()}")
 print(f"| AVERAGE = {seqs_df[new_count_col].mean()} / seqs")
-print(f"> saving results ({args.outdir+'/results.csv'})")
+print(f"> saving results ({args.output_dir+'/results.csv'})")
 
-seqs_df[[">", new_col_nm, new_count_col]].to_csv(f"{args.outdir}/results.csv")
+seqs_df[[">", new_col_nm, new_count_col]].to_csv(f"{args.output_dir}/results.csv")
 print(":: DONE ::")
 # TODO add find gene function
 #  --> given a ATG index, loook for stop codons ahead of index, check if is
